@@ -1,0 +1,47 @@
+DISCLAIMER
+This bot is poorly written, I take no responsibility if anything happens at
+all, even remotely, to you, your system, your network, your girlfriend, your
+pet, your family, your imaginary friend, your house, your porn, or anything
+at all that may come as a result of the usage, viewing, editing, etc. of this
+code.
+If it is so horrible that your eyes melt onto your laptop, causing it to 
+short-circuit, explode, and kill you, that is *your responsibility*.
+
+ABOUT
+This bot was originally written to sort-of mock someone who used emotes on
+IRC a lot, however, it was sort of welcomed, and after getting tired of
+having to restart it repeatedly to add channels, patterns to regex, etc. I
+threw those into files and made the bot somewhat modular, in that it can 
+reload the variables as they are changed.
+
+TODO
+ > Make it very much less hackish
+ > Tidy up the code
+ > Specifically fix the part with the PING, that should probably be in an elif
+   and use awk like the rest of the script
+ > Fix channel-adding command so that it also escapes channels that might have
+   other symbols (&, [, ., etc.)
+ > Remember to actually do things on the TODO list rather than forget about it
+ > Possibly add more things to the TODO list ??
+
+LICENSE
+
+                I DON'T REALLY CARE PUBLIC LICENSE 
+                       Version 1, March 2013 
+
+ Copyright (C) 2013 Jan Brennen 
+
+ Everyone is permitted to copy and distribute verbatim or modified 
+ copies of this code, and changing it is allowed as long as you don't
+ claim it's yours; or if you do, just try not to let me find out.
+ Whatever, I don't really care.
+
+                I DON'T REALLY CARE PUBLIC LICENSE 
+  TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION 
+
+ 0. DO WHAT YOU WANT, I DON'T REALLY CARE.
+ 1. IF YOU DO THINGS, DON'T CLAIM IT WAS ALL ORIGINALLY BY YOU.
+ 2. IF YOU DO THAT ANYWAY, DON'T LET ME FIND OUT.
+
+
+EOF.
