@@ -71,7 +71,6 @@ if `echo $input | awk '$2 == "PRIVMSG" { f=1 } END { exit !f }'`; then
 			i=0
 			lock=0
 			echo "" > /dev/shm/facebotreset$Network
-			echo "PRIVMSG $channel :$line"
 		fi ## Hacked in flood limit ^^
 	fi
 
