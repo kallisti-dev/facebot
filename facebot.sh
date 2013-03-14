@@ -84,7 +84,7 @@ if `echo $input | awk '$2 == "PRIVMSG" { f=1 } END { exit !f }'`; then
 			test)     reloadtest;;
 		esac
 	elif addchannel=`echo $input | awk -v master="^:$Master" 'tolower($1) ~ master && $4 == ":?addchan" { print $5; f=1 } END {exit !f}'`; then
-		sed -i "s/$/ ${addchannel//\//\\/}/" $Chanfile
+		sed -i "s/$/& ${addchannel//\//\\/}/" $Chanfile
 		sed -i "s/  / /g" $Chanfile
 		echo "JOIN $addchannel"
 	elif delchannel=`echo $input | awk -v master="^:$Master" 'tolower($1) ~ master && $4 == ":?delchan" { print $5; f=1 } END {exit !f}'`; then
