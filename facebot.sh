@@ -3,24 +3,14 @@ Master="jan"
 Server="irc.rizon.net"
 Ident="o_o"
 Ircname="O_o o.o"
-Chanfile="./channels" ## example "chanfile": echo '#channel1 #channel2' > /tmp/chanells
+Chanfile="./channels" ## example "chanfile": echo '#channel1 #channel2' > /tmp/channels
 Regexfile="./regex"   ## 
-Regexes=`cat "$Regexfile"`
 Channels=`cat "$Chanfile"`
 Nick="o__0"
-Network="" ## identifier *in case* you're running the bot multiple times
+Network="" ## identifier incase you're running the bot multiple times
 
-echo "" > /dev/shm/facebotreset$Network
+rm /dev/shm/facebotreset$Network; touch /dev/shm/facebotreset$Network
 i=0
-
-reloadregex() {
-	Regexes=`cat "$Regexfile"`
-	echo "PRIVMSG $channel :Regex reloaded"
-}
-
-reloadtest() {
-	echo "PRIVMSG $channel :TEST"
-}
 
 reloadchans() {
 	echo "JOIN 0"
@@ -55,7 +45,49 @@ if `echo $input | awk '$2 == "PRIVMSG" { f=1 } END { exit !f }'`; then
 
 	input=`echo "$input" | tr -d '\r\n'`
 	channel=`echo "$input" | awk '{OFS=":"; print $3}'`
-	if line=`echo "$input" | awk -F: '{OFS=":"; $1=$2=""; print}' | cut -c 3- | egrep -owi "$Regexes"`; then
+
+	if echo $input | awk -v master="^:$Master" 'tolower($1) ~ master && $4 ~ /^:\?/ { f=1 } END {exit !f}'; then
+		if mastercmd=`echo $input | awk '$4 == ":?cmd" { print $5; f=1 } END {exit !f}'`; then
+			case "$mastercmd" in
+				quit)     reloadquit;;
+				raw)      echo "$(echo $input | awk '{$1=$2=$3=$4=$5=""; print}' | cut -c 6-)";;
+				list)     echo "PRIVMSG $channel :COMMANDS: [chan: add, del] [regex: add, del] [reload: chans, newchans, config] [cmd: raw, quit, test, list] ";;
+				test)     echo "PRIVMSG $channel :TEST";;
+			esac
+		elif echo $input | awk '$4 == ":?reload" { f=1 } END {exit !f}'; then
+			reloadarg=`echo $input | awk '{ print $5}'`
+			case "$reloadarg" in
+				chans)		reloadchans;;
+				newchans)	newchans;;
+				config)		echo "PRIVMSG $channel :Not yet implemented, sorry.";;
+			esac
+		elif chancmd=`echo $input | awk '$4 == ":?chan" { print $5; f=1 } END {exit !f}'`; then
+			chanarg=`echo $input | awk '{ print $6}'`
+			case "$chancmd" in
+				add) 
+					sed -i "s/$/& ${chanarg//\//\\/}/" $Chanfile
+					sed -i "s/  / /g" $Chanfile
+					echo "JOIN $chanarg"
+					;;
+				del)
+					sed -i "s/${chanarg//\//\\/}//" $Chanfile
+					sed -i "s/  / /g" $Chanfile
+					echo "PART $chanarg"
+					;;
+			esac
+		elif regexcmd=`echo $input | awk '$4 == ":?regex" { print $5; f=1 } END {exit !f}'`; then
+			regexarg=`echo $input | awk '{$1=$2=$3=$4=$5=""; print}' | cut -c 6-`
+			case "$regexcmd" in
+				add)
+					echo $regexarg >> $Regexfile;;
+					#echo "PRIVMSG $channel :This feature is experimental, please check results after use and try not to use complicated regexes with it";;
+				del)
+					sed -i s/$regexarg// $Regexfile
+					sed -i -n "s/^$//;t;p;" $Regexfile
+					#echo "PRIVMSG $channel :This feature is experimental, please check results after use and try not to use complicated regexes with it";;
+			esac	
+		fi
+	elif line=`echo "$input" | awk -F: '{OFS=":"; $1=$2=""; print}' | cut -c 3- | egrep -owif "$Regexfile"`; then
 		if [ $i -lt 4 ]; then
 			echo "PRIVMSG $channel :$line"
 			((i++))
@@ -72,26 +104,6 @@ if `echo $input | awk '$2 == "PRIVMSG" { f=1 } END { exit !f }'`; then
 			lock=0
 			echo "" > /dev/shm/facebotreset$Network
 		fi ## Hacked in flood limit ^^
-	fi
-
-	if mastercmd=`echo $input | awk -v master="^:$Master" 'tolower($1) ~ master && $4 == ":?reload" { print $5; f=1 } END {exit !f}'`; then
-		case "$mastercmd" in
-			regex)    reloadregex;;
-			chans)    reloadchans;;
-			quit)     reloadquit;;
-			newchans) newchans;;
-			list)     echo "PRIVMSG $channel :regex chans newchans test quit";;
-			test)     reloadtest;;
-		esac
-	elif addchannel=`echo $input | awk -v master="^:$Master" 'tolower($1) ~ master && $4 == ":?addchan" { print $5; f=1 } END {exit !f}'`; then
-		sed -i "s/$/& ${addchannel//\//\\/}/" $Chanfile
-		sed -i "s/  / /g" $Chanfile
-		echo "JOIN $addchannel"
-	elif delchannel=`echo $input | awk -v master="^:$Master" 'tolower($1) ~ master && $4 == ":?delchan" { print $5; f=1 } END {exit !f}'`; then
-		sed -i "s/${delchannel//\//\\/}//" $Chanfile
-		sed -i "s/  / /g" $Chanfile
-		echo "PART $delchannel"
-	
 	fi
 fi
 
