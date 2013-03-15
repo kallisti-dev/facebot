@@ -9,7 +9,7 @@ Channels=`cat "$Chanfile"`
 Nick="o__0"
 Network="" ## identifier incase you're running the bot multiple times
 
-rm /dev/shm/facebotreset$Network; touch /dev/shm/facebotreset$Network
+echo "" > /dev/shm/facebotreset$Network
 i=0
 
 reloadchans() {
