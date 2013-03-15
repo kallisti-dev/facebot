@@ -7,9 +7,9 @@ Chanfile="./channels" ## example "chanfile": echo '#channel1 #channel2' > /tmp/c
 Regexfile="./regex"   ## 
 Channels=`cat "$Chanfile"`
 Nick="o__0"
-Network="" ## identifier incase you're running the bot multiple times
+Network="f g" ## identifier incase you're running the bot multiple times
 
-echo "" > /dev/shm/facebotreset$Network
+echo "" > "/dev/shm/facebotreset$Network"
 i=0
 
 reloadchans() {
@@ -91,18 +91,18 @@ if `echo $input | awk '$2 == "PRIVMSG" { f=1 } END { exit !f }'`; then
 		if [ $i -lt 4 ]; then
 			echo "PRIVMSG $channel :$line"
 			((i++))
-			if [[ $lock != 1 && $(</dev/shm/facebotreset$Network) != "reset" ]]; then
+			if [[ $lock != 1 && $(<"/dev/shm/facebotreset$Network") != "reset" ]]; then
 				lock=1
-				(sleep 12; echo "reset" > /dev/shm/facebotreset$Network) &
+				(sleep 12; echo "reset" > "/dev/shm/facebotreset$Network") &
 			fi
 		elif [ $i -lt 8 ]; then
 			sleep 0.5 && echo "PRIVMSG $channel :$line"
 			((i++))
 		fi
-		if [[ "$(</dev/shm/facebotreset$Network)" == "reset" ]]; then
+		if [[ $(<"/dev/shm/facebotreset$Network") == "reset" ]]; then
 			i=0
 			lock=0
-			echo "" > /dev/shm/facebotreset$Network
+			echo "" > "/dev/shm/facebotreset$Network"
 		fi ## Hacked in flood limit ^^
 	fi
 fi
