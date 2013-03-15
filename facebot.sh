@@ -91,7 +91,7 @@ if `echo $input | awk '$2 == "PRIVMSG" { f=1 } END { exit !f }'`; then
 		if [ $i -lt 4 ]; then
 			echo "PRIVMSG $channel :$line"
 			((i++))
-			if [[ $lock != 1 && $(</dev/shm/facebotreset) != "reset" ]]; then
+			if [[ $lock != 1 && $(</dev/shm/facebotreset$Network) != "reset" ]]; then
 				lock=1
 				(sleep 12; echo "reset" > /dev/shm/facebotreset$Network) &
 			fi
