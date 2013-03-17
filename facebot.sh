@@ -7,7 +7,7 @@ Chanfile="./channels" ## example "chanfile": echo '#channel1 #channel2' > /tmp/c
 Regexfile="./regex"   ## 
 Channels=`cat "$Chanfile"`
 Nick="o__0"
-Network="f g" ## identifier incase you're running the bot multiple times
+Network="1" ## identifier incase you're running the bot multiple times
 
 echo "" > "/dev/shm/facebotreset$Network"
 i=0
